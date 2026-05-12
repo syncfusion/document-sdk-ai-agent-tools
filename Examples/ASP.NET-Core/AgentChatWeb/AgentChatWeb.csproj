@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>12.0</LangVersion>
+    <AssemblyName>AgentChatApp</AssemblyName>
+    <RootNamespace>AgentChatApp</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.22.2" />
+    <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.15" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
+	<PackageReference Include="Syncfusion.DocumentSDK.AI.AgentTools" Version="*" />
+  </ItemGroup>
+
+
+</Project>

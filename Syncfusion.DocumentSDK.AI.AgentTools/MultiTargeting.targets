@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+	<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <EnableDefaultItems>True</EnableDefaultItems>
+	<EnableDefaultEmbeddedResourceItems>True</EnableDefaultEmbeddedResourceItems>
+    <Product>Syncfusion.DocumentSDK.AI.AgentTools</Product>
+    <Company>Syncfusion Inc.</Company>
+    <PackageId>Syncfusion.DocumentSDK.AI.AgentTools</PackageId>
+    <PackageTags>Syncfusion;AI.AgentTools</PackageTags>
+    <PackageIconUrl>http://www.syncfusion.com/content/images/nuget/sync_logo_icon.png</PackageIconUrl>
+    <PackageProjectUrl>http://www.syncfusion.com</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.syncfusion.com/nuget/license</PackageLicenseUrl>
+    <Configurations>Debug;Release;Release-Xml</Configurations>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document Processing Agent Application</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- ── Header ─────────────────────────────────────────── -->
+    <header class="app-header">
+        <h1>Document Processing Agent Application</h1>
+    </header>
+
+    <!-- ── Main Layout ────────────────────────────────────── -->
+    <main class="app-body">
+
+      <!-- ── File Explorer ──────────────────────────────── -->
+      <aside class="panel file-explorer-panel">
+        <div class="panel-title-row">
+          <h2 class="panel-title">File Explorer</h2>
+          <button id="uploadBtn" class="upload-btn" title="Upload files to Documents (Azure Blob Storage)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 16 12 12 8 16"></polyline>
+              <line x1="12" y1="12" x2="12" y2="21"></line>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+            </svg>
+            Upload
+          </button>
+          <input type="file" id="uploadInput" multiple style="display:none"
+            accept=".docx,.doc,.rtf,.html,.pptx,.ppt,.xlsx,.xls,.xlsm,.csv,.pdf,.json,.md,.txt,.png,.jpg,.jpeg,.gif,.bmp,.tiff,.webp" />
+        </div>
+
+        <ul id="folderList" class="folder-list"></ul>
+
+        <!-- File list inside a folder -->
+        <div id="fileListContainer" class="file-list-container hidden">
+          <button id="backBtn" class="back-btn">← Back</button>
+          <div id="folderBreadcrumb" class="breadcrumb"></div>
+          <ul id="fileList" class="file-list"></ul>
+        </div>
+      </aside>
+
+      <!-- ── Chat Bot ────────────────────────────────────── -->
+      <section class="panel chat-panel">
+        <h2 class="panel-title">Chat Bot</h2>
+
+        <div id="chatMessages" class="chat-messages">
+          <div class="chat-welcome">
+            <span class="robot-icon">🤖</span>
+            <p>Hello! I can help you work with your documents.<br/>Ask me anything about Word, Excel, PDF, or PowerPoint files.</p>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <textarea
+            id="chatInput"
+            class="chat-input"
+            placeholder="Ask me to process a document…"
+            rows="2"></textarea>
+          <button id="sendBtn" class="send-btn" title="Send">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+        <div class="chat-footer">
+          <button id="clearBtn" class="clear-btn">Clear conversation</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

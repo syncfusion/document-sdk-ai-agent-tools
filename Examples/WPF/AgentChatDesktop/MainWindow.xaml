@@ -1,0 +1,396 @@
+﻿<Window x:Class="AgentChatWpfApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AgentChatWpfApp"
+        mc:Ignorable="d"
+        Title="Document Processing Agent Application - Storage" 
+        Height="750" Width="1400"
+        Background="#F5F5F5">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title Bar -->
+        <Border Grid.Row="0" Background="White" Padding="20,15" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+            <TextBlock Text="Document Processing Agent Application" 
+                       FontSize="24" 
+                       FontWeight="SemiBold"
+                       Foreground="#333333"/>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- File Explorer Panel -->
+            <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="Black"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- File Explorer Header -->
+                    <Grid Grid.Row="0" Margin="0,0,0,20">
+                        <TextBlock Text="File Explorer" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Foreground="#333333"/>
+                        <Button Content="📤 Upload" 
+                                x:Name="UploadButton"
+                                HorizontalAlignment="Right"
+                                Background="#2196F3"
+                                Foreground="White"
+                                Padding="15,8"
+                                BorderThickness="0"
+                                FontSize="14"
+                                Cursor="Hand"
+                                Click="UploadButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#2196F3"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" 
+                                                        CornerRadius="6"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#1976D2"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+
+                    <!-- Folder List and Files -->
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Folder List -->
+                        <StackPanel Grid.Row="0">
+                            <StackPanel Orientation="Horizontal" 
+                                        Margin="0,10" 
+                                        Cursor="Hand"
+                                        MouseLeftButtonDown="InputFolder_Click"
+                                        x:Name="InputFolderPanel">
+                                <TextBlock Text="📁" FontSize="20" Margin="0,0,10,0"/>
+                                <TextBlock Text="Input" FontSize="16" VerticalAlignment="Center" Foreground="#555555"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" 
+                                        Margin="0,10" 
+                                        Cursor="Hand"
+                                        MouseLeftButtonDown="OutputFolder_Click"
+                                        x:Name="OutputFolderPanel">
+                                <TextBlock Text="📁" FontSize="20" Margin="0,0,10,0"/>
+                                <TextBlock Text="Output" FontSize="16" VerticalAlignment="Center" Foreground="#555555"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- File List -->
+                        <Border Grid.Row="1" 
+                                Margin="0,20,0,0"
+                                BorderBrush="#E0E0E0"
+                                BorderThickness="0,1,0,0"
+                                Padding="0,15,0,0"
+                                x:Name="FileListBorder"
+                                Visibility="Collapsed">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Current Folder Name -->
+                                <TextBlock Grid.Row="0"
+                                           x:Name="CurrentFolderText"
+                                           Text=""
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Foreground="#666666"
+                                           Margin="0,0,0,10"/>
+
+                                <!-- Files ListBox -->
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                    <ListBox x:Name="FileListBox"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             SelectionMode="Single"
+                                             MouseDoubleClick="FileListBox_MouseDoubleClick"
+                                             HorizontalContentAlignment="Stretch">
+                                        <ListBox.ItemContainerStyle>
+                                            <Style TargetType="ListBoxItem">
+                                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,8" Background="Transparent">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="50"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <!-- File Icon -->
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{Binding FileIcon}" 
+                                                               FontSize="20" 
+                                                               Margin="0,0,10,0"
+                                                               VerticalAlignment="Center"/>
+                                                    
+                                                    <!-- File Name -->
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding FileName}" 
+                                                               FontSize="13"
+                                                               Foreground="#0078D4"
+                                                               VerticalAlignment="Center"
+                                                               TextWrapping="NoWrap"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Cursor="Hand"
+                                                               Margin="0,0,10,0"/>
+                                                   
+                                                    
+                                                    <!-- File Size -->
+                                                    <TextBlock Grid.Column="2"
+                                                               Text="{Binding FileSize}"
+                                                               FontSize="12"
+                                                               Foreground="#888888"
+                                                               VerticalAlignment="Center"
+                                                               HorizontalAlignment="Right"
+                                                               Margin="0,0,5,0">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
+                                                                        <Setter Property="Opacity" Value="0"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                    
+                                                    <!-- Delete Button -->
+                                                    <Button Grid.Column="2"
+                                                            Width="28"
+                                                            Height="28"
+                                                            Margin="8,0,0,0"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            Cursor="Hand"
+                                                            ToolTip="Delete file"
+                                                            Tag="{Binding}"
+                                                            VerticalAlignment="Center"
+                                                            Click="DeleteFile_Click">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Background" Value="Transparent"/>
+                                                                <Setter Property="Opacity" Value="0"/>
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="Button">
+                                                                            <Border Background="{TemplateBinding Background}" 
+                                                                                    CornerRadius="4"
+                                                                                    Padding="2">
+                                                                                <TextBlock Text="🗑️" 
+                                                                                           FontSize="16" 
+                                                                                           HorizontalAlignment="Center" 
+                                                                                           VerticalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding FileExtension}" Value="">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding FileExtension}" Value="{x:Null}">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
+                                                                        <Setter Property="Opacity" Value="1"/>
+                                                                    </DataTrigger>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#FFE0E0"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Chat Bot Panel -->
+            <Border Grid.Column="2" Background="White" CornerRadius="8" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="Black"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Chat Bot Header -->
+                    <TextBlock Grid.Row="0" 
+                               Text="Chat Bot" 
+                               FontSize="18" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,20"
+                               Foreground="#333333"/>
+
+                    <!-- Chat Messages Area -->
+                    <ScrollViewer Grid.Row="1" 
+                                  x:Name="ChatScrollViewer"
+                                  VerticalScrollBarVisibility="Auto"
+                                  Margin="0,0,0,20">
+                        <StackPanel x:Name="ChatPanel" Margin="10"/>
+                    </ScrollViewer>
+
+                    <!-- Input Area -->
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Text Input with Send Button -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" 
+                                    BorderBrush="#E0E0E0" 
+                                    BorderThickness="1" 
+                                    CornerRadius="6"
+                                    Padding="15,12">
+                                <TextBox x:Name="InputTextBox"
+                                         Text="Ask me to process a document..."
+                                         TextWrapping="Wrap"
+                                         MaxHeight="50"
+                                         FontSize="14"
+                                         VerticalScrollBarVisibility="Auto"
+                                         Foreground="#999999"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         VerticalAlignment="Center"
+                                         GotFocus="InputTextBox_GotFocus"
+                                         LostFocus="InputTextBox_LostFocus"
+                                         KeyDown="InputTextBox_KeyDown"/>
+                            </Border>
+
+                            <Button Grid.Column="1"
+                                    x:Name="SendButton"
+                                    Width="50"
+                                    Height="50"
+                                    Margin="10,0,0,0"
+                                    Background="#2196F3"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="SendButton_Click" VerticalAlignment="Top">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#2196F3"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" 
+                                                            CornerRadius="6">
+                                                        <TextBlock Text="✈" 
+                                                                   FontSize="20" 
+                                                                   Foreground="White"
+                                                                   HorizontalAlignment="Center" 
+                                                                   VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#1976D2"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+
+                        <!-- Clear Conversation Button -->
+                        <Button Grid.Row="1"
+                                x:Name="ClearButton"
+                                Content="Clear conversation"
+                                HorizontalAlignment="Right"
+                                Margin="0,10,0,0"
+                                Padding="15,8"
+                                Background="Transparent"
+                                BorderBrush="#E0E0E0"
+                                BorderThickness="1"
+                                FontSize="13"
+                                Foreground="#666666"
+                                Cursor="Hand"
+                                Click="ClearButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" 
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        CornerRadius="6"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#F5F5F5"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

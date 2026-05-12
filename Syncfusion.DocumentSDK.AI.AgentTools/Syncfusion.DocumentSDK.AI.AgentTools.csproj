@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Syncfusion.DocumentSDK.AI.AgentTools</AssemblyName>
+	<RootNamespace>Syncfusion.DocumentSDK.AI.AgentTools</RootNamespace>
+  </PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-Xml|AnyCPU'">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<DocumentationFile>Syncfusion.DocumentSDK.AI.AgentTools.xml</DocumentationFile>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="README.md" />
+		<None Remove="Syncfusion.DocumentSDK.AI.AgentTools.nuspec" />
+		<None Remove="syncfusion_logo.png" />
+	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Syncfusion.DocIO.NET" Version="*" />
+    <PackageReference Include="Syncfusion.Pdf.NET" Version="*" />
+	<PackageReference Include="Syncfusion.PDF.OCR.NET" Version="*" />
+    <PackageReference Include="Syncfusion.XlsIO.NET" Version="*" />
+    <PackageReference Include="Syncfusion.Presentation.NET" Version="*" />
+    <PackageReference Include="Syncfusion.DocIORenderer.NET" Version="*" />
+    <PackageReference Include="Syncfusion.PresentationRenderer.NET" Version="*" />
+    <PackageReference Include="Syncfusion.XlsIORenderer.NET" Version="*" />
+    <PackageReference Include="Syncfusion.SmartDataExtractor.NET" Version="*" />
+    <PackageReference Include="Syncfusion.SmartTableExtractor.NET" Version="*" />
+    <PackageReference Include="Syncfusion.SmartFormRecognizer.NET" Version="*" />
+  </ItemGroup>
+  <Import Project=".\MultiTargeting.targets" />
+</Project>
