@@ -82,9 +82,9 @@ namespace Syncfusion.AI.AgentTools.Word
         /// <param name="bookmarkName">The name of the bookmark from which content will be extracted.</param>
         /// <returns>Result containing the document ID of the newly created document with the extracted bookmark content.</returns>
         [Tool(
-            Name = "GetContent",
+            Name = "GetBookmarkContent",
             Description = "Get content from the bookmark. documentIdOrFilePath: The document ID (InMemory mode) or input file path (DocumentStorage mode). Returns the document id of new document created for bookmark content.")]
-        public AgentToolResult GetContent(
+        public AgentToolResult GetBookmarkContent(
             [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode)")]
             string documentIdOrFilePath,
             [ToolParameter(Description = "The name of the bookmark")]
@@ -137,9 +137,9 @@ namespace Syncfusion.AI.AgentTools.Word
         /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
         /// <returns>Result indicating success or failure of the bookmark content replacement operation.</returns>
         [Tool(
-            Name = "ReplaceContent",
+            Name = "ReplaceBookmarkContent",
             Description = "Replaces the existing bookmark content with content from another document. documentIdOrFilePath: The document ID (InMemory mode) or input file path (DocumentStorage mode).")]
-        public AgentToolResult ReplaceContent(
+        public AgentToolResult ReplaceBookmarkContent(
             [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode) containing the bookmark")]
             string documentIdOrFilePath,
             [ToolParameter(Description = "The name of the bookmark")]
@@ -191,9 +191,9 @@ namespace Syncfusion.AI.AgentTools.Word
         /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
         /// <returns>Result indicating success or failure of the bookmark content removal operation.</returns>
         [Tool(
-            Name = "RemoveContent",
+            Name = "RemoveBookmarkContent",
             Description = "Removes the content of the specified bookmark in the Word document. documentIdOrFilePath: The document ID (InMemory mode) or input file path (DocumentStorage mode).")]
-        public AgentToolResult RemoveContent(
+        public AgentToolResult RemoveBookmarkContent(
             [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode)")]
             string documentIdOrFilePath,
             [ToolParameter(Description = "The name of the bookmark")]

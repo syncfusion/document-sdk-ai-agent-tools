@@ -44,8 +44,8 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
         /// <param name="filePath">Optional path to an existing PowerPoint file. If null, creates a new empty presentation.</param>
         /// <param name="password">Optional password for encrypted presentations.</param>
         /// <returns>Result containing the document ID of the created or loaded presentation.</returns>
-        [Tool(Name = "LoadPresentation", Description = "Create a empty PowerPoint Presentation instance in memory or load an existing one. FilePath - Use the path to load an existing Presentation; if null, creates an empty presentation. Returns the documentid.")]
-        public AgentToolResult LoadPresentation(
+        [Tool(Name = "CreatePresentation", Description = "Create a empty PowerPoint Presentation instance in memory or load an existing one. FilePath - Use the path to load an existing Presentation; if null, creates an empty presentation. Returns the documentid.")]
+        public AgentToolResult CreatePresentation(
             [ToolParameter(Description = "Path to an existing PowerPoint file, or null to create a new presentation")] string? filePath = null,
             [ToolParameter(Description = "Password for encrypted presentation")] string? password = null)
         {

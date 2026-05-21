@@ -103,9 +103,9 @@ namespace Syncfusion.AI.AgentTools.Word
         /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
         /// <returns>Result indicating whether the revision rejection was completed successfully.</returns>
         [Tool(
-            Name = "RejectRevision",
+            Name = "RejectRevisionsByAuthor",
             Description = "Rejects all tracked change revisions made by a specific author in the Word document. documentIdOrFilePath: The document ID (InMemory mode) or input file path (DocumentStorage mode).")]
-        public AgentToolResult RejectRevision(
+        public AgentToolResult RejectRevisionsByAuthor(
             [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode)")]
             string documentIdOrFilePath,
             [ToolParameter(Description = "The name of the author whose revisions should be rejected")]

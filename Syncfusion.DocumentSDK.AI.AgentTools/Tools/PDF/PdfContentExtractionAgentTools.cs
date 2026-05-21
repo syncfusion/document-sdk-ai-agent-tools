@@ -270,7 +270,7 @@ namespace Syncfusion.AI.AgentTools.PDF
         /// <param name="documentIdOrFilePath">The document ID (InMemory mode) or input file path (DocumentStorage mode).</param>
         /// The unique identifier of the PDF document to search.
         /// </param>
-        /// <param name="text">
+        /// <param name="texts">
         /// The text to be searched.
         /// </param>
         /// <returns>
@@ -283,12 +283,12 @@ namespace Syncfusion.AI.AgentTools.PDF
         )]
         public AgentToolResult FindTextInPdf(
             [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode)")] string documentIdOrFilePath,
-            [ToolParameter(Description = "The array of text to be searched")] string[] text)
+            [ToolParameter(Description = "The array of text to be searched")] string[] texts)
         {
             try
             {
                 ArgumentNullException.ThrowIfNull(documentIdOrFilePath);
-                ArgumentNullException.ThrowIfNull(text);
+                ArgumentNullException.ThrowIfNull(texts);
 
                 var document = OpenDocument(documentIdOrFilePath);
                 if (document == null)
@@ -316,7 +316,7 @@ namespace Syncfusion.AI.AgentTools.PDF
                 }
 
                 // Find text using Syncfusion UG-supported API
-                loadedDocument.FindText(text.ToList(), out var matchRects);
+                loadedDocument.FindText(texts.ToList(), out var matchRects);
 
                 string resolvedDocId = documentIdOrFilePath;
                 if (isReloaded && Mode == DocumentManagerMode.InMemory)

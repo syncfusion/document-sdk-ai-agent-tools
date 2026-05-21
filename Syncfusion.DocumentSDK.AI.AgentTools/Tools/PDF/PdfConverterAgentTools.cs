@@ -22,7 +22,7 @@ using Syncfusion.Drawing;
 namespace Syncfusion.AI.AgentTools.PDF
 {
     /// <summary>
-    /// Provides AI agent tools for PDF document convertion operations.
+    /// Provides AI agent tools for PDF document conversion operations.
     /// </summary>
     public class PdfConverterAgentTools : AgentToolBase<PdfDocumentBase>
     {
@@ -169,12 +169,12 @@ namespace Syncfusion.AI.AgentTools.PDF
         /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
         /// <returns>Result containing the document ID of the created PDF.</returns>
         [Tool(
-            Name = "ImageToPdf",
+            Name = "ConvertImageToPdf",
             Description = "Creates a PDF document from one or more image files using ImageToPdfConverter with control over image placement and page size. " +
                           "imageFiles: Array of image file paths (InMemory mode) or storage keys (DocumentStorage mode). " +
                           "outputFilePath: Output file path for saving the result (DocumentStorage mode only)."
         )]
-        public AgentToolResult ImageToPdf(
+        public AgentToolResult ConvertImageToPdf(
             [ToolParameter(Description = "Array of image file paths (InMemory mode) or storage keys (DocumentStorage mode)")]
             string[] imageFiles,
 

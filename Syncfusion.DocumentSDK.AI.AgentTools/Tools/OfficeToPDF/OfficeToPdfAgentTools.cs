@@ -73,9 +73,9 @@ namespace Syncfusion.AI.AgentTools.OfficeToPDF
         /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
         /// <returns>Result containing the generated PDF document ID.</returns>
         [Tool(
-            Name = "ConvertToPDF",
+            Name = "ConvertToPdf",
             Description = "Converts an Office document (Word, Excel, or PowerPoint) to PDF format. sourceDocumentIdOrFilePath: The document ID (InMemory mode) or input file path (DocumentStorage mode). Returns the PDF document ID.")]
-        public AgentToolResult ConvertToPDF(
+        public AgentToolResult ConvertToPdf(
             [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode) of the source document")]
             string sourceDocumentIdOrFilePath,
             [ToolParameter(Description = "The type of source document: Word, Excel, or PowerPoint")]

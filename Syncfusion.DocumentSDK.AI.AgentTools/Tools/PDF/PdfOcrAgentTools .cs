@@ -46,10 +46,10 @@ namespace Syncfusion.AI.AgentTools.PDF
         /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
         /// <returns>Result containing the document ID, language used, and data path.</returns>
         [Tool(
-        Name = "OcrPdf",
+        Name = "PerformOcr",
         Description = "Performs Optical Character Recognition (OCR) on a PDF document. documentIdOrFilePath: The document ID (InMemory mode) or input file path (DocumentStorage mode)."
         )]
-        public AgentToolResult OcrPdf(
+        public AgentToolResult PerformOcr(
         [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode)")]
         string documentIdOrFilePath,
 

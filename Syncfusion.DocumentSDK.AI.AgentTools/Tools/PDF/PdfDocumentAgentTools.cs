@@ -84,8 +84,8 @@ namespace Syncfusion.AI.AgentTools.PDF
         /// Retrieves all PDF document IDs currently in memory.
         /// </summary>
         /// <returns>Result containing array of all PDF document IDs.</returns>
-        [Tool(Name = "GetAllPDFDocuments", Description = "Returns all documentid of the PDF document instance that are available in main memory.")]
-        public AgentToolResult GetAllPDFDocuments()
+        [Tool(Name = "GetAllPdfDocuments", Description = "Returns all document IDs for PDF document instances available in memory.")]
+        public AgentToolResult GetAllPdfDocuments()
         {
             try
             {
@@ -108,8 +108,8 @@ namespace Syncfusion.AI.AgentTools.PDF
         /// <param name="documentId">The ID of the PDF document to export.</param>
         /// <param name="filePath">The file path where the PDF should be saved.</param>
         /// <returns>Result containing the export file path.</returns>
-        [Tool(Name = "ExportPDFDocument", Description = "Exports the PDF document to the file system.")]
-        public AgentToolResult ExportPDFDocument(
+        [Tool(Name = "ExportPdfDocument", Description = "Exports the PDF document to the file system.")]
+        public AgentToolResult ExportPdfDocument(
             [ToolParameter(Description = "The ID of the document to export")] string documentId,
             [ToolParameter(Description = "The file path to export to")] string filePath)
         {

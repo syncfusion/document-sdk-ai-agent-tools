@@ -50,7 +50,7 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
         [Tool(Name = "MergePresentations", Description = "Merges multiple PowerPoint Presentations into a single destination presentation. documentIdOrFilePath: The document ID (InMemory mode) or input file path (DocumentStorage mode) of the destination presentation.")]
         public AgentToolResult MergePresentations(
             [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode) of the destination presentation")] string documentIdOrFilePath,
-            [ToolParameter(Description = "Source presentation IDs or file paths. Specify comma-separated source document IDs or file paths.")] string sourceDocumentIds,
+            [ToolParameter(Description = "A collection of document IDs or file paths to merge")] string[] sourceDocumentIds,
             [ToolParameter(Description = "Paste option: 'SourceFormatting' (default) or 'UseDestinationTheme'")] string pasteOption = "SourceFormatting",
             [ToolParameter(Description = "Output file path for saving the result (DocumentStorage mode only).")] string? outputFilePath = null)
         {
@@ -59,9 +59,7 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
                 ArgumentNullException.ThrowIfNull(documentIdOrFilePath);
                 ArgumentNullException.ThrowIfNull(sourceDocumentIds);
 
-                string[] sourceDocuments = sourceDocumentIds.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-                if (sourceDocuments.Length == 0)
+                if (sourceDocumentIds.Length == 0)
                     return AgentToolResult.Fail("No source documents provided. Specify comma-separated source document IDs or file paths.");
 
                 if (!TryParsePasteOption(pasteOption, out PasteOptions parsedPasteOption))
@@ -72,7 +70,7 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
                     return AgentToolResult.Fail($"Destination presentation not found: {documentIdOrFilePath}");
 
                 int slidesMerged = 0;
-                foreach (var sourceId in sourceDocuments)
+                foreach (var sourceId in sourceDocumentIds)
                 {
                     var sourcePresentation = OpenDocument(sourceId);
                     if (sourcePresentation == null)
@@ -98,8 +96,8 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
                     outputKey = documentIdOrFilePath; // InMemory mode always updates the same document ID
 
                 return AgentToolResult.Ok(
-                    $"Successfully merged {sourceDocuments.Length} presentation(s) with {slidesMerged} total slides into {outputKey}",
-                    new { DestinationId = outputKey, SourceCount = sourceDocuments.Length, SlidesMerged = slidesMerged, PasteOption = pasteOption });
+                    $"Successfully merged {sourceDocumentIds.Length} presentation(s) with {slidesMerged} total slides into {outputKey}",
+                    new { DestinationId = outputKey, SourceCount = sourceDocumentIds.Length, SlidesMerged = slidesMerged, PasteOption = pasteOption });
             }
             catch (Exception ex)
             {

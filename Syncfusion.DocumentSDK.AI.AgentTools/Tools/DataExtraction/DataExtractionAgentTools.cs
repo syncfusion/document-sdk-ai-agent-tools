@@ -66,9 +66,9 @@ namespace Syncfusion.AI.AgentTools.DataExtraction
         /// <param name="detectBorderlessTables">Enable detection of border-less tables.</param>
         /// <param name="outputFilePath">Optional output JSON file path to save the extracted data.</param>
         /// <returns>Result containing the extracted JSON data or error message.</returns>
-        [Tool(Name = "ExtractDataAsJSON",
+        [Tool(Name = "ExtractDataAsJson",
               Description = "Extracts structured data including text, forms, tables, and images from a PDF document or image file and returns as JSON string. Supports form field detection with configurable options (signatures, textboxes, checkboxes, radio buttons) and table detection with border-less table support. Page range and confidence threshold can be specified for fine-tuned extraction.")]
-        public AgentToolResult ExtractDataAsJSON(
+        public AgentToolResult ExtractDataAsJson(
             [ToolParameter(Description = "Path to input PDF or image file (.pdf, .png, .jpg, .jpeg)")]
             string inputFilePath,
 
@@ -208,9 +208,9 @@ namespace Syncfusion.AI.AgentTools.DataExtraction
         /// <param name="endPage">End page number for extraction (1-based). Use -1 for all pages.</param>
         /// <param name="outputFilePath">Optional output JSON file path to save the extracted table data.</param>
         /// <returns>Result containing the extracted table JSON data or error message.</returns>
-        [Tool(Name = "ExtractTableAsJSON",
+        [Tool(Name = "ExtractTableAsJson",
               Description = "Extracts only table data from a PDF document and returns as JSON string. Optimized for table-focused extraction with support for border-less table detection, page range specification, and confidence thresholding. Use this method when you only need table data without form fields or other content.")]
-        public AgentToolResult ExtractTableAsJSON(
+        public AgentToolResult ExtractTableAsJson(
             [ToolParameter(Description = "Path to input PDF file")]
             string inputFilePath,
 
@@ -297,9 +297,9 @@ namespace Syncfusion.AI.AgentTools.DataExtraction
         /// <param name="endPage">End page number for recognition (1-based). Use -1 for all pages.</param>
         /// <param name="outputFilePath">Optional output JSON file path to save the recognized form fields data.</param>
         /// <returns>Result containing the recognized form fields JSON data or error message.</returns>
-        [Tool(Name = "RecognizeFormAsJson",
+        [Tool(Name = "ExtractFormFieldsAsJson",
               Description = "Extracts only form data from a PDF document and returns as JSON string. Optimized for form-focused extraction with support  page range specification, and confidence thresholding. Use this method when you only need form data without table or other content.")]
-        public AgentToolResult RecognizeFormAsJson(
+        public AgentToolResult ExtractFormFieldsAsJson(
             [ToolParameter(Description = "Path to input PDF file")]
             string inputFilePath,
 
@@ -396,9 +396,9 @@ namespace Syncfusion.AI.AgentTools.DataExtraction
         /// <param name="detectBorderlessTables">Enable detection of border-less tables.</param>
         /// <param name="outputFilePath">Optional output Markdown (.md) file path.</param>
         /// <returns>Result containing the extracted Markdown data or error message.</returns>
-        [Tool(Name = "ConvertPDFToMarkdown",
+        [Tool(Name = "ConvertPdfToMarkdown",
             Description = "Converts structured information from PDF documents and scanned images into Markdown (MD) format. It analyzes text blocks, tables and headers to preserve the original layout and formatting in the generated Markdown output.")]
-        public AgentToolResult ConvertPDFToMarkdown(
+        public AgentToolResult ConvertPdfToMarkdown(
             [ToolParameter(Description = "Path to input PDF file")]
             string inputFilePath,
 
@@ -498,9 +498,9 @@ namespace Syncfusion.AI.AgentTools.DataExtraction
         /// <param name="detectBorderlessTables">Enable detection of border-less tables.</param>
         /// <param name="outputFilePath">Optional output Markdown (.md) file path.</param>
         /// <returns>Result containing the extracted table Markdown data or error message.</returns>
-        [Tool(Name = "ConvertPDFTableToMarkdown",
+        [Tool(Name = "ConvertPdfTableToMarkdown",
             Description = "Converts tables from PDF documents and scanned images into Markdown (MD) format. It analyzes visual table structures, including bordered and border-less tables, enabling developers to programmatically convert tabular content into clean and well-structured Markdown representations.")]
-        public AgentToolResult ConvertPDFTableToMarkdown(
+        public AgentToolResult ConvertPdfTableToMarkdown(
             [ToolParameter(Description = "Path to input PDF file")]
             string inputFilePath,
 

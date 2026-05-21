@@ -133,9 +133,9 @@ namespace Syncfusion.AI.AgentTools.Word
         /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
         /// <returns>Result indicating the number of replacements performed.</returns>
         [Tool(
-            Name = "FindAndReplaceWithRegex",
+            Name = "FindAndReplaceByPattern",
             Description = "Finds and replaces first occurrence of the specified pattern in the Word document. Returns a count of replaced text.")]
-        public AgentToolResult FindAndReplaceWithRegex(
+        public AgentToolResult FindAndReplaceByPattern(
             [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode)")]
             string documentIdOrFilePath,
             [ToolParameter(Description = "The regex pattern to match text (e.g., '{[A-Za-z]+}' to match placeholders like {Name}, {Date})")]

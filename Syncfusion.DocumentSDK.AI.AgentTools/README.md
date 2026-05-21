@@ -121,13 +121,13 @@ static string BuildSystemMessage(string inputDir, string outputDir) => $"""
     4. **Operate** — Pass the returned document ID to all subsequent tool calls.
        Never guess or hard-code IDs; always use the value from step 1.
     5. **Export/Save** — Call the matching export tool with the document ID:
-       • PDF: ExportPDFDocument
+       • PDF: ExportPdfDocument
        Always export as the final step unless explicitly told not to save.
 
     **REDACTION WORKFLOW:**
     When user asks to redact sensitive information:
     1. Load PDF and auto-detect all sensitive information (names, SSNs, addresses, phone numbers, emails, etc.) by extracting and analyzing the content without user prompting.
-    2. Find all detected sensitive text using FindTextInPdf with coordinates, then redact permanently using RedactContent, and export the sanitized document with ExportPDFDocument.
+    2. Find all detected sensitive text using FindTextInPdf with coordinates, then redact permanently using RedactContent, and export the sanitized document with ExportPdfDocument.
     3. Report only the TYPES and COUNTS of information redacted (e.g., "4 personal names", "1 social security number", "1 residential address") — never display actual values or sensitive data.
     
     **FILE PATHS:**
