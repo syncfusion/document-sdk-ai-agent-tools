@@ -48,8 +48,8 @@ Agent tools support two operational modes that determine how documents are handl
 
 ### Document Manager Modes
 
-- [In-Memory Mode](https://help.syncfusion.com/document-processing/ai-agent-tools/getting-started-in-memory-mode)
-- [Storage Mode](https://help.syncfusion.com/document-processing/ai-agent-tools/getting-started-storage-mode)
+- [In-Memory Mode](https://help.syncfusion.com/document-processing/ai-agent-tools/getting-started#in-memory-mode)
+- [Storage Mode](https://help.syncfusion.com/document-processing/ai-agent-tools/getting-started#storage-mode)
 
 
 ### Prerequisites
