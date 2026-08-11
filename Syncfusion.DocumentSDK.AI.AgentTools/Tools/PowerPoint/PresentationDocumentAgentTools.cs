@@ -105,18 +105,19 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
         }
 
         /// <summary>
-        /// Exports a PowerPoint presentation from memory to the file system.
+        /// Exports a PowerPoint presentation from memory to the file system in the specified format
         /// </summary>
         /// <param name="documentId">The ID of the presentation to export.</param>
         /// <param name="filePath">The file path where the presentation should be saved.</param>
-        /// <param name="format">The export format (PPTX, PDF, Image).</param>
+        /// <param name="format">The export format (PPTX, PPTM, POTM, POTX, MD).</param>
         /// <returns>Result containing the export file path.</returns>
-        [Tool(Name = "ExportPresentation", Description = "Exports the PowerPoint presentation to the file system.")]
+        [Tool(Name = "ExportPresentation", Description = "Exports the PowerPoint presentation to the file system in the specified format.")]
         public AgentToolResult ExportPresentation(
             [ToolParameter(Description = "The ID of the presentation to export")] string documentId,
             [ToolParameter(Description = "The file name or full path to export to. If only filename is provided, uses the output directory.")]
             string filePath,
-            [ToolParameter(Description = "Export format: PPTX only")] string format = "PPTX")
+            [ToolParameter(Description = "The format: PPTX, PPTM, POTM, POTX, MD (default: PPTX)")]
+            string format = "PPTX")
         {
             try
             {
@@ -132,6 +133,22 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
                 else
                 {
                     fullPath = Path.Combine(_outputDirectory, filePath);
+                }
+
+                // Ensure correct file extension based on format
+                string extension = format.ToUpperInvariant() switch
+                {
+                    "PPTX" => ".pptx",
+                    "PPTM" => ".pptm",
+                    "POTM" => ".potm",
+                    "POTX" => ".potx",
+                    "MD" => ".md",
+                    _ => ".pptx"
+                };
+
+                if (!fullPath.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
+                {
+                    fullPath = Path.ChangeExtension(fullPath, extension);
                 }
 
                 _manager.ExportDocument(fullPath, documentId);

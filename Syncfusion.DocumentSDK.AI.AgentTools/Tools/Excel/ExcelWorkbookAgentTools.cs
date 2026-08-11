@@ -157,13 +157,14 @@ namespace Syncfusion.AI.AgentTools.Excel
         /// </summary>
         /// <param name="workbookId">The ID of the workbook to export.</param>
         /// <param name="filePath">The file path where the workbook should be saved.</param>
-        /// <param name="version">The Excel version format (Excel97to2003, Xlsx, Excel2016).</param>
+        /// <param name="version">The export format: XLS, XLSX, XLSM, MD (default: XLSX).</param>
         /// <returns>Result containing the export file path.</returns>
         [Tool(Name = "ExportWorkbook", Description = "Exports the workbook to the file system in the specified format.")]
         public AgentToolResult ExportWorkbook(
             [ToolParameter(Description = "The ID of the workbook to export")] string workbookId,
             [ToolParameter(Description = "The file path to export to")] string filePath,
-            [ToolParameter(Description = "Excel version: XLS, XLSX, XLSM (default: XLSX)")] string version = "XLSX")
+            [ToolParameter(Description = "The format: XLS, XLSX, XLSM, MD (default: XLSX)")]
+            string version = "XLSX")
         {
             try
             {
@@ -184,6 +185,7 @@ namespace Syncfusion.AI.AgentTools.Excel
                     "XLSX" => ".xlsx",
                     "XLSM" => ".xlsm",
                     "CSV" => ".csv",
+                    "MD" => ".md",  
                     _ => ".xlsx"
                 };
 

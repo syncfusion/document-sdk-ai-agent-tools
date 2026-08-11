@@ -24,12 +24,16 @@ namespace Syncfusion.AI.AgentTools.Word
     /// </summary>
     public class WordImportExportAgentTools : AgentToolBase<WordDocument>
     {
+        private readonly WordDocumentManager _manager;
         /// <summary>
         /// Initializes a new instance of the <see cref="WordImportExportAgentTools"/> class (Mode 1 — InMemory).
         /// </summary>
         /// <param name="manager">The document manager for managing Word documents.</param>
         public WordImportExportAgentTools(WordDocumentManager manager)
-            : base(manager, DocumentType.Word) { }
+            : base(manager, DocumentType.Word)
+        { 
+            _manager = manager; 
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WordImportExportAgentTools"/> class (Mode 2 — DocumentStorage).
@@ -139,10 +143,14 @@ namespace Syncfusion.AI.AgentTools.Word
                 bool isTemporary = false;
                 // ── Open ────────────────────────────────────────────────────────
                 var document = OpenDocument(documentIdOrFilePath);
-                if (document == null)
+                if (document == null && Mode == DocumentManagerMode.DocumentStorage)
                 {
                     document = new WordDocument();
                     isTemporary = true;
+                }
+                else if (document == null)
+                {
+                    document = _manager.CreateDocument();
                 }
 
                 string markdownContent;
@@ -388,17 +396,17 @@ namespace Syncfusion.AI.AgentTools.Word
         /// </summary>
         /// <param name="documentIdOrFilePath">The input file path (DocumentStorage mode).</param>
         /// <param name="filePath">The destination file path where the converted document will be saved.</param>
-        /// <param name="formatType">The output format: Docx, Doc, Rtf, Html, or Txt. Default is Docx.</param>
+        /// <param name="formatType">The output format: Docx, Doc, Rtf, Html, Md or Txt. Default is Docx.</param>
         /// <returns>Result indicating whether the document was converted successfully.</returns>
         [Tool(
             Name = "ConvertDocument",
-            Description = "Converts the document to the file system in the specified format. Works only in DocumentStorage mode. documentIdOrFilePath: The input file path from storage. Supported formats: DOCX, DOC, RTF, HTML, TXT.")]
+            Description = "Converts the document to the file system in the specified format. Works only in DocumentStorage mode. documentIdOrFilePath: The input file path from storage. Supported formats: DOCX, DOC, RTF, HTML, TXT, MD.")]
         public AgentToolResult ConvertDocument(
             [ToolParameter(Description = "The input file path (DocumentStorage mode)")]
             string documentIdOrFilePath,
             [ToolParameter(Description = "The file path to export to")]
             string filePath,
-            [ToolParameter(Description = "The format: Docx, Doc, Rtf, Html, Txt. Defaults to Docx")]
+            [ToolParameter(Description = "The format: Docx, Doc, Rtf, Html, Txt, Md. Defaults to Docx")]
             string? formatType = "Docx")
         {
             try

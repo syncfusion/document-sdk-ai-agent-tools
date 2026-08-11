@@ -209,7 +209,7 @@ namespace Syncfusion.AI.AgentTools.Core
                         SaveExcelDocument((IWorkbook)document, ms, filePath);
                         break;
                     case DocumentType.PowerPoint:
-                        ((IPresentation)document).Save(ms);
+                        SavePresentationDocument((IPresentation)document, ms, filePath);
                         break;
                     default:
                         throw new NotSupportedException($"DocumentType '{documentType}' is not supported.");
@@ -263,6 +263,36 @@ namespace Syncfusion.AI.AgentTools.Core
         }
 
         /// <summary>
+        /// Saves a presentation document to the specified stream in the format determined by the file path extension.
+        /// </summary>
+        /// <param name="document">The presentation document to save.</param>
+        /// <param name="stream">The stream to save the document to.</param>
+        /// <param name="filePath">The file path with the extension that determines the save format.</param>
+        private static void SavePresentationDocument(IPresentation document, Stream stream, string filePath)
+        {
+            var formatType = GetPresentationFormatType(filePath);
+            document.Save(stream, formatType);
+        }
+
+        /// <summary>
+        /// Determines the appropriate <see cref="Presentation.FormatType"/> based on the file extension.
+        /// </summary>
+        /// <param name="filePath">The file path with the extension to check.</param>
+        /// <returns>The corresponding <see cref="Presentation.FormatType"/> for the file extension.</returns>
+        private static Presentation.FormatType GetPresentationFormatType(string filePath)
+        {
+            var extension = Path.GetExtension(filePath).ToLowerInvariant();
+            return extension switch
+            {
+                ".pptx" => Presentation.FormatType.Pptx,
+                ".pptm" => Presentation.FormatType.Pptm,
+                ".potm" => Presentation.FormatType.Potm,
+                ".potx" => Presentation.FormatType.Potx,
+                ".md" => Presentation.FormatType.Markdown,
+                _ => Presentation.FormatType.Pptx // Default to .pptx format
+            };
+        }
+        /// <summary>
         /// Saves an Excel workbook to the specified stream in the format determined by the file path extension.
         /// </summary>
         /// <param name="workbook">The Excel workbook to save.</param>
@@ -305,6 +335,7 @@ namespace Syncfusion.AI.AgentTools.Core
                 ".xltx" => ExcelSaveType.SaveAsTemplate,
                 ".xltm" => ExcelSaveType.SaveAsMacroTemplate,
                 ".ods" => ExcelSaveType.SaveAsODS,
+                ".md" => ExcelSaveType.Markdown,
                 _ => ExcelSaveType.SaveAsXLS // Default to .xlsx format
             };
         }

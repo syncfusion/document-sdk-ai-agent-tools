@@ -25,12 +25,16 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
     /// </summary>
     public class PresentationOperationsAgentTools : AgentToolBase<IPresentation>
     {
+        private readonly PresentationManager _manager;
         /// <summary>
         /// Initializes a new instance of the <see cref="PresentationOperationsAgentTools"/> class (Mode 1 — InMemory).
         /// </summary>
         /// <param name="manager">The presentation manager for managing PowerPoint presentations.</param>
         public PresentationOperationsAgentTools(PresentationManager manager)
-            : base(manager, DocumentType.PowerPoint) { }
+            : base(manager, DocumentType.PowerPoint) 
+        {
+            _manager = manager;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PresentationOperationsAgentTools"/> class (Mode 2 — DocumentStorage).
@@ -392,6 +396,156 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
         }
 
         /// <summary>
+        /// Imports Markdown content into a PowerPoint presentation.
+        /// </summary>
+        /// <param name="markdownContentOrFilePath">The markdown content as a string or the file path to a markdown file.</param>
+        /// <param name="documentIdOrFilePath">The document ID (InMemory mode) or input file path (DocumentStorage mode) of the destination presentation.</param>
+        /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
+        /// <returns>Result indicating success or failure.</returns>
+        [Tool(
+            Name = "ImportMarkdown",
+            Description = "Imports markdown content into a PowerPoint presentation. markdownContent / filePath: The markdown content as a string or the file path to a markdown file. documentIdOrFilePath: The document ID (InMemory mode) or input file path (DocumentStorage mode).")]
+        public AgentToolResult ImportMarkdown(
+            [ToolParameter(Description = "The markdown content as a string or the file path to a markdown file")]
+            string markdownContentOrFilePath,
+            [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode) of the destination presentation")]
+            string? documentIdOrFilePath = null,
+            [ToolParameter(Description = "Output file path for saving the result (DocumentStorage mode only).")]
+            string? outputFilePath = null)
+        {
+            try
+            {
+                bool isTemporary = false;
+                // ── Open ────────────────────────────────────────────────────────
+                var presentation = OpenDocument(documentIdOrFilePath);
+                if (presentation == null && Mode == DocumentManagerMode.DocumentStorage)
+                {
+                    presentation = Syncfusion.Presentation.Presentation.Create();
+                    isTemporary = true;
+                }
+                else if (presentation == null)
+                {
+                    presentation = _manager.CreateDocument();
+                }
+
+                string markdownContent;
+
+                if (Mode == DocumentManagerMode.InMemory && File.Exists(markdownContentOrFilePath))
+                {
+                    // Mode 1: file path fallback
+                    markdownContent = File.ReadAllText(markdownContentOrFilePath);
+                }
+                else if (Mode == DocumentManagerMode.DocumentStorage && StorageManager!.HasDocument(markdownContentOrFilePath))
+                {
+                    // Mode 2: get document stream from storage and read as Markdown
+                    Stream? mdDocStream = StorageManager!.GetDocumentStream(markdownContentOrFilePath);
+                    if (mdDocStream == null)
+                        return AgentToolResult.Fail($"Markdown Document not found: {markdownContentOrFilePath}");
+                    using (var reader = new StreamReader(mdDocStream, System.Text.Encoding.UTF8))
+                    {
+                        markdownContent = reader.ReadToEnd();
+                    }
+                    mdDocStream.Dispose();
+                }
+                else
+                {
+                    markdownContent = markdownContentOrFilePath;
+                }
+
+                // Import Markdown content
+                using (MemoryStream stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(markdownContent)))
+                {
+                    using (IPresentation tempPresentation = Syncfusion.Presentation.Presentation.Open(stream))
+                    {
+                        foreach (ISlide slide in tempPresentation.Slides)
+                        {
+                            presentation.Slides.Add(slide.Clone(), PasteOptions.SourceFormatting);
+                        }
+                    }
+                }
+
+                // ── Save ────────────────────────────────────────────────────────
+                if (outputFilePath == null && Mode == DocumentManagerMode.DocumentStorage)
+                    outputFilePath = "output_md_imported.pptx";
+
+                string outputKey = outputFilePath;
+                SaveDocument(outputKey, presentation);
+                if (Mode == DocumentManagerMode.InMemory)
+                    outputKey = documentIdOrFilePath ?? InMemoryManager!.ActiveDocumentId!;
+
+                if(isTemporary)
+                    presentation.Close();
+
+                return AgentToolResult.Ok($"Markdown content imported successfully into presentation {outputKey}");
+            }
+            catch (Exception ex)
+            {
+                return AgentToolResult.Fail($"Failed to import Markdown: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Gets the PowerPoint presentation content as Markdown.
+        /// </summary>
+        /// <param name="documentIdOrFilePath">The document ID (InMemory mode) or input file path (DocumentStorage mode).</param>
+        /// <returns>Result containing the Markdown content string or an error message.</returns>
+        [Tool(
+            Name = "GetMarkdown",
+            Description = "Gets the PowerPoint presentation content as Markdown using the given documentId or filePath. Returns the Markdown content string of a PowerPoint presentation.")]
+        public AgentToolResult GetMarkdown(
+            [ToolParameter(Description = "The ID of the presentation or file path")]
+            string documentIdOrFilePath)
+        {
+            try
+            {
+                IPresentation? presentation = null;
+                bool isTemporary = false;
+                // ── Open ────────────────────────────────────────────────────────
+                if (Mode == DocumentManagerMode.InMemory)
+                {
+                    // Mode 1: try manager first, then file path
+                    if (InMemoryManager!.HasDocument(documentIdOrFilePath))
+                    {
+                        presentation = InMemoryManager.GetDocument(documentIdOrFilePath);
+                    }
+                    else if (File.Exists(documentIdOrFilePath))
+                    {
+                        presentation = Syncfusion.Presentation.Presentation.Open(documentIdOrFilePath);
+                        isTemporary = true;
+                    }
+                }
+                else
+                {
+                    // Mode 2: use storage existence check, no File.Exists fallback
+                    if (StorageManager!.HasDocument(documentIdOrFilePath))
+                    {
+                        presentation = OpenDocument(documentIdOrFilePath);
+                        isTemporary = true; // transient copy from storage — must be closed
+                    }
+                }
+
+                if (presentation == null)
+                    return AgentToolResult.Fail($"Presentation not found: {documentIdOrFilePath}");
+
+                // Export to Markdown format
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    presentation.Save(stream, Syncfusion.Presentation.FormatType.Markdown);
+                    stream.Position = 0;
+                    string markdownContent = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+
+                    if (isTemporary)
+                        presentation.Close();
+
+                    return AgentToolResult.Ok($"Generated Markdown content from {documentIdOrFilePath} " + markdownContent, new { MarkdownContent = markdownContent });
+                }
+            }
+            catch (Exception ex)
+            {
+                return AgentToolResult.Fail($"Failed to get Markdown: {ex.Message}");
+            }
+        }
+
         /// Exports PowerPoint presentation slides as images to the file system.
         /// </summary>
         /// <param name="documentIdOrFilePath">The document ID (InMemory mode) or input file path (DocumentStorage mode).</param>
@@ -511,6 +665,55 @@ namespace Syncfusion.AI.AgentTools.PowerPoint
                 default:
                     result = PasteOptions.SourceFormatting;
                     return false;
+            }
+        }
+        /// <summary>
+        /// Converts the document to the file system in the specified format (DocumentStorage mode only).
+        /// </summary>
+        [Tool(
+            Name = "ConvertPresentation",
+            Description = "Converts the presentation to the file system in the specified format. Works only in DocumentStorage mode. documentIdOrFilePath: The input file path from storage. Supported formats: PPTX, PPTM, POTX, POTM, MD.")]
+        public AgentToolResult ConvertPresentation(
+            [ToolParameter(Description = "The document ID (InMemory mode) or input file path (DocumentStorage mode).")]
+            string documentIdOrFilePath,
+            [ToolParameter(Description = "The file path to export to")]
+            string filePath,
+            [ToolParameter(Description = "The format: PPTX, PPTM, POTX, POTM, MD. Defaults to Pptx")]
+            string? formatType = "Pptx")
+        {
+            try
+            {
+
+                // Open the document from storage
+                var document = OpenDocument(documentIdOrFilePath);
+                if (document == null)
+                    return AgentToolResult.Fail($"Document not found: {documentIdOrFilePath}");
+
+                // Ensure correct file extension based on format
+                string extension = formatType?.ToUpperInvariant() switch
+                {
+                    "PPTX" => ".pptx",
+                    "PPTM" => ".pptm",
+                    "POTX" => ".potx",
+                    "POTM" => ".potm",
+                    "MD" => ".md",
+                    _ => ".pptx"
+                };
+
+                string outputPath = filePath;
+                if (!outputPath.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
+                {
+                    outputPath = Path.ChangeExtension(outputPath, extension);
+                }
+
+                // Save the document to storage 
+                SaveDocument(outputPath, document);
+
+                return AgentToolResult.Ok($"Document exported successfully to {outputPath}", new { FilePath = outputPath });
+            }
+            catch (Exception ex)
+            {
+                return AgentToolResult.Fail($"Failed to export document: {ex.Message}");
             }
         }
     }

@@ -24,12 +24,16 @@ namespace Syncfusion.AI.AgentTools.Excel
     /// </summary>
     public class ExcelConversionAgentTools : AgentToolBase<IWorkbook>
     {
+        private readonly ExcelWorkbookManager _manager;
         /// <summary>
         /// Initializes a new instance of the <see cref="ExcelConversionAgentTools"/> class (Mode 1 — InMemory).
         /// </summary>
         /// <param name="manager">The Excel workbook manager.</param>
         public ExcelConversionAgentTools(ExcelWorkbookManager manager)
-            : base(manager, DocumentType.Excel) { }
+            : base(manager, DocumentType.Excel) 
+        { 
+           _manager = manager;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExcelConversionAgentTools"/> class (Mode 2 — DocumentStorage).
@@ -524,13 +528,174 @@ namespace Syncfusion.AI.AgentTools.Excel
         }
 
         /// <summary>
+        /// Imports Markdown content into an Excel workbook.
+        /// </summary>
+        /// <param name="markdownContentOrFilePath">The markdown content as a string or the file path to a markdown file.</param>
+        /// <param name="workbookIdOrFilePath">The workbook ID (InMemory mode) or input file path (DocumentStorage mode) of the destination document.</param>
+        /// <param name="outputFilePath">Output file path for saving the result (DocumentStorage mode only).</param>
+        /// <returns>Result indicating success or failure.</returns>
+        [Tool(
+            Name = "ImportMarkdown",
+            Description = "Imports markdown content into an Excel workbook. markdownContent / filePath: The markdown content as a string or the file path to a markdown file. workbookIdOrFilePath: The workbook ID (InMemory mode) or input file path (DocumentStorage mode).")]
+        public AgentToolResult ImportMarkdown(
+            [ToolParameter(Description = "The markdown content as a string or the file path to a markdown file.")]
+            string markdownContentOrFilePath,
+            [ToolParameter(Description = "The workbook ID (InMemory mode) or input file path (DocumentStorage mode) of the destination document")]
+            string? workbookIdOrFilePath = null,
+            [ToolParameter(Description = "Output file path for saving the result (DocumentStorage mode only).")]
+            string? outputFilePath = null)
+        {
+            try
+            {
+                bool isTemporary = false;
+                // ── Open ────────────────────────────────────────────────────────
+                var workbook = OpenDocument(workbookIdOrFilePath);
+                if(workbook == null && Mode == DocumentManagerMode.DocumentStorage)
+                {
+                    workbook = new ExcelEngine().Excel.Workbooks.Create(1);
+                    isTemporary = true;
+                }
+
+                else if (workbook == null)
+                { 
+                    workbook = _manager.CreateDocument();
+                }
+
+                string markdownContent;
+
+                if (Mode == DocumentManagerMode.InMemory && File.Exists(markdownContentOrFilePath))
+                {
+                    // Mode 1: file path fallback
+                    markdownContent = File.ReadAllText(markdownContentOrFilePath);
+                }
+                else if (Mode == DocumentManagerMode.DocumentStorage && StorageManager!.HasDocument(markdownContentOrFilePath))
+                {
+                    // Mode 2: get document stream from storage and read as Markdown
+                    Stream? mdDocStream = StorageManager!.GetDocumentStream(markdownContentOrFilePath);
+                    if (mdDocStream == null)
+                        return AgentToolResult.Fail($"Markdown Document not found: {markdownContentOrFilePath}");
+                    using (var reader = new StreamReader(mdDocStream, System.Text.Encoding.UTF8))
+                    {
+                        markdownContent = reader.ReadToEnd();
+                    }
+                    mdDocStream.Dispose();
+                }
+                else
+                {
+                    markdownContent = markdownContentOrFilePath;
+                }
+
+                // Import Markdown Content
+                using (MemoryStream stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(markdownContent)))
+                {
+                    IWorkbook tempWorkbook = new ExcelEngine().Excel.Workbooks.Open(stream, ExcelOpenType.Markdown);
+
+                    try
+                    {
+                        // Copy all worksheets from temp workbook to destination workbook
+                        foreach (IWorksheet sourceSheet in tempWorkbook.Worksheets)
+                        {
+                            // Clone the source sheet and add it to destination workbook
+                            workbook.Worksheets.AddCopy(sourceSheet);
+                        }
+                        workbook.Worksheets[0].Remove();
+                    }
+                    finally
+                    {
+                        tempWorkbook.Close();
+                    }
+                }
+
+                // ── Save ────────────────────────────────────────────────────────
+                if (outputFilePath == null && Mode == DocumentManagerMode.DocumentStorage)
+                    outputFilePath = "output_md_imported.xlsx";
+
+                string outputKey = outputFilePath;
+                SaveDocument(outputKey, workbook);
+                if (Mode == DocumentManagerMode.InMemory)
+                    outputKey = workbookIdOrFilePath ?? InMemoryManager!.ActiveDocumentId!; // InMemory mode always updates the same document ID
+
+                if(isTemporary)
+                    workbook.Close();
+
+                return AgentToolResult.Ok($"Markdown content imported successfully into Excel workbook {outputKey}");
+            }
+            catch (Exception ex)
+            {
+                return AgentToolResult.Fail($"Failed to import Markdown: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Gets the Excel workbook content as Markdown.
+        /// </summary>
+        /// <param name="documentIdOrFilePath">The workbook ID (InMemory mode) or input file path (DocumentStorage mode).</param>
+        /// <returns>Result containing the Markdown content string or an error message.</returns>
+        [Tool(
+            Name = "GetMarkdown",
+            Description = "Gets the Excel workbook content as Markdown using the given workbookId or filePath. Returns the Markdown content string of an Excel workbook.")]
+        public AgentToolResult GetMarkdown(
+            [ToolParameter(Description = "The ID of the workbook or file path")]
+            string documentIdOrFilePath)
+        {
+            try
+            {
+                IWorkbook? workbook = null;
+                bool isTemporary = false;
+                // ── Open ────────────────────────────────────────────────────────
+                if (Mode == DocumentManagerMode.InMemory)
+                {
+                    // Mode 1: try manager first, then file path
+                    if (InMemoryManager!.HasDocument(documentIdOrFilePath))
+                    {
+                        workbook = InMemoryManager.GetDocument(documentIdOrFilePath);
+                    }
+                    else if (File.Exists(documentIdOrFilePath))
+                    {
+                        workbook = new ExcelEngine().Excel.Workbooks.Open(documentIdOrFilePath);
+                        isTemporary = true;
+                    }
+                }
+                else
+                {
+                    // Mode 2: use storage existence check, no File.Exists fallback
+                    if (StorageManager!.HasDocument(documentIdOrFilePath))
+                    {
+                        workbook = OpenDocument(documentIdOrFilePath);
+                        isTemporary = true; // transient copy from storage — must be closed
+                    }
+                }
+
+                if (workbook == null)
+                    return AgentToolResult.Fail($"Workbook not found: {documentIdOrFilePath}");
+
+                // Export to Markdown format
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream, ExcelSaveType.Markdown);
+                    stream.Position = 0;
+                    string markdownContent = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+
+                    if (isTemporary)
+                        workbook.Close();
+
+                    return AgentToolResult.Ok($"Generated Markdown content from {documentIdOrFilePath} " + markdownContent, new { MarkdownContent = markdownContent });
+                }
+            }
+            catch (Exception ex)
+            {
+                return AgentToolResult.Fail($"Failed to get Markdown: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Converts the workbook to the file system in the specified format (DocumentStorage mode only).
         /// </summary>
-        [Tool(Name = "ConvertWorkbook", Description = "Converts the workbook to the file system in the specified format. Works only in DocumentStorage mode. workbookIdOrFilePath: The input file path from storage. Supported formats: xls, xlsx, xlsm")]
+        [Tool(Name = "ConvertWorkbook", Description = "Converts the workbook to the file system in the specified format. Works only in DocumentStorage mode. workbookIdOrFilePath: The input file path from storage. Supported formats: xls, xlsx, xlsm, md")]
         public AgentToolResult ConvertWorkbook(
             [ToolParameter(Description = "The input file path (DocumentStorage mode)")] string workbookIdOrFilePath,
             [ToolParameter(Description = "The file path to export to")] string outputPath,
-            [ToolParameter(Description = "The format: xls, xlsx, xlsm, csv, tsv. Defaults to xlsx")] string? formatType = "xlsx")
+            [ToolParameter(Description = "The format: xls, xlsx, xlsm, csv, tsv, md. Defaults to xlsx")] string? formatType = "xlsx")
         {
             try
             {
@@ -548,6 +713,7 @@ namespace Syncfusion.AI.AgentTools.Excel
                     "XLSM" => ".xlsm",
                     "CSV" => ".csv",
                     "TSV" => ".tsv",
+                    "MD" => ".md",
                     _ => ".xlsx"
                 };
 

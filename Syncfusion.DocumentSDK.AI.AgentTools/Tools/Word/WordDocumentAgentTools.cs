@@ -123,17 +123,17 @@ namespace Syncfusion.AI.AgentTools.Word
         /// </summary>
         /// <param name="documentId">The ID of the document to be exported.</param>
         /// <param name="filePath">The file name or full path where the exported document will be saved</param>
-        /// <param name="formatType">The export format: 'Docx', 'Doc', 'Rtf', 'Html', or 'Txt'. Default is 'Docx'.</param>
+        /// <param name="formatType">The export format: 'Docx', 'Doc', 'Rtf', 'Html', 'Md' or 'Txt'. Default is 'Docx'.</param>
         /// <returns>Result indicating whether the export operation succeeded or failed.</returns>
         [Tool(
             Name = "ExportDocument",
-            Description = "Exports the document to the file system in the specified format. Supported formats: DOCX, DOC, RTF, HTML, TXT.")]
+            Description = "Exports the document to the file system in the specified format. Supported formats: DOCX, DOC, RTF, HTML, TXT, MD.")]
         public AgentToolResult ExportDocument(
             [ToolParameter(Description = "The ID of the document to export")]
             string documentId,
             [ToolParameter(Description = "The file name or full path to export to. If only filename is provided, uses the output directory.")]
             string filePath,
-            [ToolParameter(Description = "The format: Docx, Doc, Rtf, Html, Txt")]
+            [ToolParameter(Description = "The format: Docx, Doc, Rtf, Html, Txt, Md")]
             string? formatType = "Docx")
         {
             try
